@@ -1,0 +1,46 @@
+{
+    "manifest_version": 3,
+    "name": "Input Translation",
+    "version": "1.0",
+    "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
+    "permissions": [
+        "*://*/*",
+        "activeTab",
+        "tabs",
+        "contextMenus",
+        "webRequest",
+        "webRequestBlocking",
+        "storage",
+        "input",
+        "https://api.fanyi.baidu.com/"
+    ],
+    "action": {
+        "default_popup": "popup/popup.html",
+        "default_icon": "images/icon-16.png"
+    },
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "scripts/content.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["images/*.png"],
+            "matches": ["<all_urls>"]
+        }
+    ]
+}

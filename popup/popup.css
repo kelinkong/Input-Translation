@@ -1,0 +1,124 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    margin: 0;
+    width: 280px;
+    height: 250px;
+    display: flex;
+    background-color: #e3e2e2;
+    color: #333;
+    flex-direction: column;
+}
+.container {
+    margin-top: 5px;
+    width: 100%;
+    height: auto;
+    background-color: #f9f9f9;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 4px;
+}
+
+select {
+    margin-bottom: 0px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    height: 28px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 10px;
+    width: 10px;
+    left: 2px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #177ed2;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #177ed2;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(23px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+p {
+    font-size: 14px;
+    color: gray;
+    padding: 0 20px;
+    text-align: justify;
+    font-family: 'Consoles', sans-serif;
+    line-height: 1.2;
+    margin: 6px 0;
+}
+
+code {
+    background-color: #177ed2;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #fff;
+}
+.icon {
+    width: 16px;
+    height: 16px;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+}
+.text-container{
+    margin: 10px 0;
+}
