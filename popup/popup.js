@@ -13,8 +13,8 @@ window.onload = function () {
         document.getElementById('auto-translate').checked = result.autoTranslate;
         document.getElementById('target-language').value = result.targetLanguage;
         document.getElementById('input-translate').checked = result.inputTranslate;
+        console.log('Settings loaded', result.autoTranslate, result.targetLanguage, result.inputTranslate);
     });
-    console.log('Settings loaded', result.autoTranslate, result.targetLanguage, result.inputTranslate);
 }
 
 function saveSettings() {
@@ -34,5 +34,5 @@ function sendMessageToContent(autoTranslate, targetLanguage, inputTranslate) {
 }
 
 document.getElementById('project-link').addEventListener('click', function () {
-    chrome.tabs.create({ url: 'https://github.com/kelinkong/input-translate.git' });
+    chrome.tabs.create({ url: 'https://github.com/kelinkong/Input-Translation.git' });
 });
