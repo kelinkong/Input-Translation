@@ -66,12 +66,18 @@ function translateSelectedText() {
                     console.error(chrome.runtime.lastError);
                     return;
                 }
+                if (!response || !response.data || !response.data.trans_result || response.data.trans_result.length === 0) {
+                    console.error('Unexpected response', response);
+                    return;
+                }
                 console.log(response.data);
                 showTranslation(response.data.trans_result[0].dst, selectedText, rect);
             });
         }
     });
 }
+
+let panel; 
 
 function showTranslation(translation, originalText, rect) {
     console.log('showTranslation called with translation:', translation);
@@ -96,7 +102,7 @@ function showTranslation(translation, originalText, rect) {
     panel.style.width = '250px';
     panel.style.height = 'auto';
     panel.style.overflow = 'visible';
-    panel.style.wordWrap = 'break-word';
+    panel.style.overflowWrap = 'break-word';
     panel.style.zIndex = '1000';
     panel.style.fontSize = '16px';
     panel.style.borderRadius = '10px';
@@ -112,7 +118,6 @@ function showTranslation(translation, originalText, rect) {
 document.addEventListener('click', function (event) {
     var isClickInside = panel.contains(event.target);
     if (!isClickInside) {
-        // 用户点击了面板外部，关闭面板
         panel.remove();
     }
 });
