@@ -49,16 +49,16 @@ Automatically translates selected text into the target language.
 
 **Not Supported:** :x:
 
-| Website | Support Status | Reason for Non-support |
-| :----: | :--------: | ------------ |
-| Google Search | :x:  | Google Search does not allow script modifications to the interface |
-| Bing Search | :white_check_mark:  |  | 
-| GitHub |  :heavy_check_mark: | There is a delay |  
-| Zhihu | :white_check_mark:  |  | 
-| Stack Overflow | :white_check_mark:  |  | 
-| Quora | :x:  | After translation, it reverts to the original text, possibly due to Quora's restrictions | 
-| YouTube| :white_check_mark:  |  | 
-| Twitter| :white_check_mark:  |  | 
+| Website | Support Status |
+| :----: | :--------: | 
+| Google Search | :x:  |
+| Bing Search | :white_check_mark:  |  
+| GitHub |  :heavy_check_mark: | 
+| Zhihu | :white_check_mark:  | 
+| Stack Overflow | :white_check_mark:  |  
+| Quora | :x:  | 
+| YouTube| :white_check_mark:  |  
+| Twitter| :white_check_mark:  |  
 
 ## License
 
