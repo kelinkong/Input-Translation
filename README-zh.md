@@ -47,17 +47,22 @@
 
 **不支持：** :x:
 
-| 网站 | 是否支持 | 不支持的原因 |
-| :----: | :--------: | ------------ |
-| Google搜索 | :x:  | 谷歌搜索没有放开脚本修改界面的权限 |
-| Bing搜索 | :white_check_mark:  |  | 
-| GitHub |  :heavy_check_mark: | 有延迟 |  
-| 知乎 | :white_check_mark:  |  | 
-| stack overflow | :white_check_mark:  |  | 
-| quora | :x:  | 翻译之后又变为原文，可能是quora的限制 | 
-| YouTube| :white_check_mark:  |  | 
-| 推特| :white_check_mark:  |  | 
+| 网站 | 是否支持 |
+| :----: | :--------: |
+| Google搜索 | :x:  |
+| Bing搜索 | :white_check_mark:  |
+| GitHub |  :heavy_check_mark: | 
+| 知乎 | :white_check_mark:  | 
+| stack overflow | :white_check_mark:  | 
+| quora | :x:  | 
+| YouTube| :white_check_mark:  |  
+| 推特| :white_check_mark:  | 
 
 ## 许可证
 
 MIT License
+
+## 开发日志
+
+- [note one](https://kelinkong.github.io/2024/03/05/input-translate/)
+- [note two](https://kelinkong.github.io/2024/03/07/input-translation/)
