@@ -20,8 +20,6 @@ Add ` / ` + the abbreviation of the target language after the input text to auto
 
 #### Supported Languages
 
-#### Supported Languages
-
 | Abbreviation | Language | Abbreviation | Language |
 | :----: | :--------: | :----: | :--------: |
 | en | English | zh | Chinese |
@@ -63,3 +61,7 @@ Automatically translates selected text into the target language.
 ## License
 
 MIT License
+
+## Development Notes
+- [note one](https://kelinkong.github.io/2024/03/05/input-translate/)
+- [note two](https://kelinkong.github.io/2024/03/07/input-translation/)
