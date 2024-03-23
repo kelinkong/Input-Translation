@@ -30,6 +30,7 @@
     "content_scripts": [
         {
             "js": [
+                "scripts/panel.js",
                 "scripts/content.js"
             ],
             "matches": [
