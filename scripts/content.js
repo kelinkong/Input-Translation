@@ -21,16 +21,15 @@ chrome.storage.sync.get({ autoTranslate: true, targetLanguage: 'zh', inputTransl
 
 // Listen for keyup events
 document.addEventListener('keyup', function (event) {
-    if (event.target.tagName.toLowerCase() === 'input' && inputTranslate) {
+    if(!inputTranslate) return;
+    if (event.target.tagName.toLowerCase() === 'input' || event.target.tagName.toLowerCase() === 'textarea'){
         clearTimeout(timer);
         timer = setTimeout(() => { // Set a timeout to limit the number of requests
-            console.log('translateText called with text:');
             var text = event.target.value;
-            console.log(event);
             var match = text.match(/(.*)(\/en|\/zh|\/fra|\/de|\/kor|\/jp|\/spa|\/th|\/ara|\/ru|\/pt|\/it|\/el|\/nl)$/);
             if (match) {
-                console.log("start to translate");
                 var textToTranslate = match[1];
+                console.log('Calling translation function, the content that needs to be translated is:', textToTranslate);
                 var languageCode = match[2].slice(1);
                 chrome.runtime.sendMessage({ text: textToTranslate, lang: languageCode }, function (response) {
                     if (chrome.runtime.lastError) {
@@ -67,11 +66,11 @@ document.addEventListener('click', function (event) {
 });
 
 function translateSelectedText() {
-    console.log('translateSelectedText called');
     window.setTimeout(() => { // Set a timeout to wait for the selection to be completed
         var selectedText = window.getSelection();
         var text = selectedText.toString();
         if (text && !isSelectionInInput(selectedText)) {
+            console.log('Calling the word segmentation translation function, the translated content is:', text);
             var rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
             chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
                 if (chrome.runtime.lastError) {
@@ -94,7 +93,6 @@ function isSelectionInInput(selection) {
 }
 
 function isTextInInput(node) {
-    console.log(node);
     if (node.nodeType === Node.ELEMENT_NODE && (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA')) {
         return true;
     }
