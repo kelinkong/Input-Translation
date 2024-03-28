@@ -49,7 +49,7 @@ Automatically translates selected text into the target language.
 
 | Website | Support Status |
 | :----: | :--------: | 
-| Google Search | :x:  |
+| Google Search | :white_check_mark:  |
 | Bing Search | :white_check_mark:  |  
 | GitHub |  :heavy_check_mark: | 
 | Zhihu | :white_check_mark:  | 
