@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Input Translation",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
     "permissions": [
         "*://*/*",
