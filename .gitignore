@@ -1,2 +1,5 @@
 .env
+.DS_Storenode_modules\ndist\n.env\n.DS_Store
 .DS_Store
+node_modules/
+dist/

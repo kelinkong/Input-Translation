@@ -1,19 +1,19 @@
 {
     "manifest_version": 3,
     "name": "Input Translation",
-    "version": "1.1",
+    "version": "1.2.1",
     "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
     "permissions": [
-        "*://*/*",
         "activeTab",
         "tabs",
         "contextMenus",
-        "webRequest",
-        "webRequestBlocking",
-        "storage",
-        "input",
-        "https://api.fanyi.baidu.com/"
+        "storage"
     ],
+    "host_permissions": [
+        "https://api.fanyi.baidu.com/*",
+        "*://*/*"
+    ],
+    "omnibox": { "keyword": "tr" },
     "action": {
         "default_popup": "popup/popup.html",
         "default_icon": "images/icon-16.png"
@@ -25,7 +25,8 @@
         "128": "images/icon-128.png"
     },
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "background.js",
+        "type": "module"
     },
     "content_scripts": [
         {

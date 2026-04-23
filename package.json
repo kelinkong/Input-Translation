@@ -1,0 +1,17 @@
+{
+  "name": "input-translation",
+  "version": "1.2.0",
+  "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
+  "license": "GPL-3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^5.4.1",
+    "vite": "^5.0.0",
+    "vite-plugin-javascript-obfuscator": "^3.1.0",
+    "vite-plugin-static-copy": "^1.0.0"
+  }
+}

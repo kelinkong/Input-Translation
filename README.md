@@ -1,67 +1,68 @@
-## Input Translation
+# Input Translation 🚀
 
-- [中文说明](README-zh.md)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://opensource.org/licenses/GPL-3.0)
+[![Vite](https://img.shields.io/badge/build-Vite-646CFF?logo=vite)](https://vitejs.dev/)
 
-A browser extension for text box translation and hover translation. Supports browsers using the Chrome kernel.
+[中文说明](./README-zh.md)
 
-## Features
-### Input Box Translation
-Add ` / ` + the abbreviation of the target language after the input text to automatically translate. For example:
+**Input Translation** is a powerful browser extension designed to enhance your multilingual workflow. It features instant input field translation, hover translation, and quick address bar translation.
 
-`你好/en` will automatically translate to `Hello`.
+## ✨ Features
 
-`Hello/kor` will automatically translate to `안녕하세요`.
+### 1. Input Box Translation (Keyboard Magic)
+Instantly translate your text by typing `/` followed by the language code.
+- **Usage:** Type `Hello/zh` -> press space/enter -> turns into `你好`.
+- **Supported Languages:** `en`, `zh`, `jp`, `kor`, `fra`, `spa`, `de`, `it`, `ru`, `pt`, `ara`, `nl`.
 
-![](./images/input.gif)
+![Input Translation Demo](./images/input.gif)
 
-**Adjust the `Input Translate` option to turn this feature on or off.**
+### 2. Address Bar Quick Translation (Omnibox)
+Translate directly from your browser's address bar and perform searches instantly.
+- **Usage:** Type `tr` + **Space** in the address bar -> type `apple/zh`.
+- **Instant Preview:** The translation result appears in the dropdown menu instantly.
+- **Auto-fill & Search:** Select a result to fill the address bar, or press **Enter** to search for the translated text directly on Google.
 
-![](images/input-select.png)
+### 3. Hover/Selection Translation
+Select any word or paragraph on a webpage to get an instant translation popup.
 
-#### Supported Languages
+![Selection Translation Demo](images/select-trans.png)
 
-| Abbreviation | Language | Abbreviation | Language |
-| :----: | :--------: | :----: | :--------: |
-| en | English | zh | Chinese |
-| kor | Korean | jp | Japanese |
-| fra | French | spa | Spanish |
-| de | German | it | Italian |
-| ru | Russian | pt | Portuguese |
-| ara | Arabic | nl | Dutch |
+---
 
-### Hover Translation
-Automatically translates selected text into the target language.
+## 🌐 Website Compatibility
 
-![](images/select-trans.png)
+| Website | Status | Notes |
+| :---- | :----: | :---- |
+| Google Search | ✅ | Fully Supported |
+| Bing Search | ✅ | Fully Supported |
+| GitHub | ✅ | Fully Supported |
+| Zhihu | ✅ | Fully Supported |
+| Stack Overflow | ✅ | Fully Supported |
+| YouTube | ✅ | Fully Supported |
+| Twitter (X) | ✅ | Fully Supported |
+| Quora | ✅ | Fully Supported |
 
-**Adjust the `Hover Translate` option to turn on or off this feature.**
+---
 
-**The `Target Language` option allows you to select the target language for hover translation.**
+## 🛠️ Development & Build
 
-![](images/hover.png)
+This project uses **Vite** for secure API key management and optimized builds.
 
-## Plugin Usage on Various Websites
-**Perfectly Supported:** :white_check_mark:
+### Setup & Build
+1. Clone the repo and install dependencies: `npm install`
+2. Create a `.env` file with your [Baidu Translation API](https://fanyi-api.baidu.com/) keys:
+   ```env
+   VITE_BAIDU_APP_ID=your_appid
+   VITE_BAIDU_KEY=your_key
+   ```
+3. Build for production: `npm run build`
+4. Load the `dist/` folder into your browser.
 
-**Supported but with bugs:** :heavy_check_mark: 
+---
 
-**Not Supported:** :x:
+## 📜 License
+Distributed under the GNU GPL v3.0 License. See `LICENSE` for more information.
 
-| Website | Support Status |
-| :----: | :--------: | 
-| Google Search |:white_check_mark:  |
-| Bing Search | :white_check_mark:  |  
-| GitHub |  :heavy_check_mark: | 
-| Zhihu | :white_check_mark:  | 
-| Stack Overflow | :white_check_mark:  |  
-| Quora | :x:  | 
-| YouTube| :white_check_mark:  |  
-| Twitter| :white_check_mark:  |  
+---
 
-## License
-
-MIT License
-
-## Development Notes
-- [note one](https://kelinkong.github.io/2024/03/05/input-translate/)
-- [note two](https://kelinkong.github.io/2024/03/07/input-translation/)
+*Made with ❤️ by [kelin]*

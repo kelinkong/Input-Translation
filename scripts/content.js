@@ -1,5 +1,11 @@
 /**
- * @license MIT
+ * Input Translation
+ * Copyright (C) 2026 kelin
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  */
 
 let timer = null;
@@ -7,46 +13,61 @@ let targetLanguage;
 let autoTranslate;
 let inputTranslate;
 
-// Load settings from browser storage
+const SUPPORTED_LANGS = 'en|zh|fra|de|kor|jp|spa|th|ara|ru|pt|it|el|nl';
+const LANG_REGEX = new RegExp(`(.*)\\/(${SUPPORTED_LANGS})$`);
+
+// Load settings
 chrome.storage.sync.get({ autoTranslate: true, targetLanguage: 'zh', inputTranslate: true }, function (result) {
-    console.log('Settings loaded:', result);
     targetLanguage = result.targetLanguage;
     autoTranslate = result.autoTranslate;
     inputTranslate = result.inputTranslate;
-    console.log('autoTranslate:', autoTranslate);
     if (autoTranslate) {
         document.addEventListener('mouseup', translateSelectedText);
     }
 });
 
-// Listen for keyup events
+// Optimized Input Listener
 document.addEventListener('keyup', function (event) {
-    if(!inputTranslate) return;
-    if (event.target.tagName.toLowerCase() === 'input' || event.target.tagName.toLowerCase() === 'textarea'){
-        clearTimeout(timer);
-        timer = setTimeout(() => { // Set a timeout to limit the number of requests
-            var text = event.target.value;
-            var match = text.match(/(.*)(\/en|\/zh|\/fra|\/de|\/kor|\/jp|\/spa|\/th|\/ara|\/ru|\/pt|\/it|\/el|\/nl)$/);
-            if (match) {
-                var textToTranslate = match[1];
-                console.log('Calling translation function, the content that needs to be translated is:', textToTranslate);
-                var languageCode = match[2].slice(1);
-                chrome.runtime.sendMessage({ text: textToTranslate, lang: languageCode }, function (response) {
-                    if (chrome.runtime.lastError) {
-                        console.error(chrome.runtime.lastError);
-                        return;
-                    }
-                    console.log(response.data);
-                    event.target.value = response.data.trans_result[0].dst;
+    const el = event.target;
+    if (!inputTranslate || !(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
+
+    const text = el.value;
+    
+    // 预检测：如果输入不包含斜杠，或者斜杠后没有任何字符，直接跳过
+    if (!text.includes('/')) return;
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        const match = text.match(LANG_REGEX);
+        if (match) {
+            const textToTranslate = match[1].trim();
+            const languageCode = match[2];
+
+            if (!textToTranslate) return;
+
+            console.log('Debounced translation triggering for:', textToTranslate);
+
+            chrome.runtime.sendMessage({ text: textToTranslate, lang: languageCode }, function (response) {
+                if (chrome.runtime.lastError || !response?.data?.trans_result) {
+                    console.error('Translation message failed', chrome.runtime.lastError);
+                    return;
+                }
+
+                const translatedText = response.data.trans_result[0].dst;
+                el.value = translatedText;
+                
+                // 触发事件同步状态
+                const events = ['input', 'change'];
+                events.forEach(evt => {
+                    el.dispatchEvent(new Event(evt, { bubbles: true }));
                 });
-            }
-        }, 1000);
-    }
+            });
+        }
+    }, 600); // 优化后的防抖时间
 });
 
-// Listen for messages from the popup，update settings
+// Listen for messages from the popup
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log('Message received from popup:', request);
     if (request.action == "updateSettings") {
         targetLanguage = request.targetLanguage;
         autoTranslate = request.autoTranslate;
@@ -58,34 +79,26 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-// close the panel when clicking outside
+// Close panel when clicking outside
 document.addEventListener('click', function (event) {
+    const panel = document.getElementById('translate-panel');
     if (panel && !panel.contains(event.target)) {
         panel.remove();
     }
 });
 
 function translateSelectedText() {
-    window.setTimeout(() => { // Set a timeout to wait for the selection to be completed
-        var selectedText = window.getSelection();
-        var text = selectedText.toString();
+    window.setTimeout(() => {
+        const selectedText = window.getSelection();
+        const text = selectedText.toString().trim();
         if (text && !isSelectionInInput(selectedText)) {
-            console.log('Calling the word segmentation translation function, the translated content is:', text);
-            var rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+            const rect = selectedText.getRangeAt(0).getBoundingClientRect();
             chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
-                if (chrome.runtime.lastError) {
-                    console.error(chrome.runtime.lastError);
-                    return;
-                }
-                if (!response || !response.data || !response.data.trans_result || response.data.trans_result.length === 0) {
-                    console.error('Unexpected response', response);
-                    return;
-                }
-                console.log(response.data);
+                if (!response?.data?.trans_result) return;
                 showTranslation(response.data.trans_result[0].dst, rect);
             });
         }
-    });
+    }, 200);
 }
 
 function isSelectionInInput(selection) {
@@ -93,13 +106,7 @@ function isSelectionInInput(selection) {
 }
 
 function isTextInInput(node) {
-    if (node.nodeType === Node.ELEMENT_NODE && (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA')) {
-        return true;
-    }
-    for (var i = 0; i < node.childNodes.length; i++) {
-        if (isTextInInput(node.childNodes[i])) {
-            return true;
-        }
-    }
-    return false;
+    if (!node) return false;
+    const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
 }

@@ -1,68 +1,68 @@
-## Input Translation
+# Input Translation (输入翻译官) 🚀
 
-- [English](README.md)
+[![许可证: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://opensource.org/licenses/GPL-3.0)
+[![Vite](https://img.shields.io/badge/构建工具-Vite-646CFF?logo=vite)](https://vitejs.dev/)
 
-一款用于文本框翻译和划词翻译的浏览器插件。支持使用chrome内核的浏览器。
+[English](./README.md)
 
-##  功能
-### 输入框翻译
-在输入的文本后加上`/`+目标语言的缩写，即可自动翻译。例如：
+**Input Translation** 是一款功能强大的浏览器插件，旨在优化你的跨语言工作流。它提供了输入框即时翻译、划词翻译以及地址栏快速翻译功能。
 
-`你好/en` 会自动翻译为 `Hello`。
+## ✨ 核心功能
 
-`Hello/kor` 会自动翻译为 `안녕하세요`。
+### 1. 输入框翻译 (键盘魔术)
+通过在文本后输入 `/` + 语言代码，即可实现即时翻译。
+- **使用方法:** 输入 `你好/en` -> 按空格或回车 -> 自动变为 `Hello`。
+- **支持语言代码:** `en` (英), `zh` (中), `jp` (日), `kor` (韩), `fra` (法), `spa` (西), `de` (德), `it` (意), `ru` (俄), `pt` (葡), `ara` (阿), `nl` (荷)。
 
-![](./images/input.gif)
+![输入翻译演示](./images/input.gif)
 
-**调节`Input Translate`选项可以开启或关闭该功能。**
+### 2. 地址栏快速翻译 (Omnibox)
+直接在浏览器地址栏进行快速翻译并搜索，无需切换页面。
+- **使用方法:** 在地址栏输入 `tr` + **空格** -> 输入 `apple/zh`。
+- **即时预览:** 下拉列表会即刻显示翻译结果。
+- **自动填充与搜索:** 选中结果后地址栏会自动填充翻译内容，按下**回车**将直接在 Google 中搜索该结果。
 
-![](images/input-select.png)
+### 3. 划词/选区翻译
+在网页上选中任何单词或段落，即可弹出即时翻译窗口。
 
-#### 支持的语言
+![划词翻译演示](images/select-trans.png)
 
-| 缩写 | 语言 | 缩写 | 语言 |
-| :----: | :--------: | :----: | :--------: |
-| en | 英语 | zh | 中文 |
-| kor | 韩语 | jp | 日语 |
-| fra | 法语 | spa | 西班牙语 |
-| de | 德语 | it | 意大利语 |
-| ru | 俄语 | pt | 葡萄牙语 |
-| ara | 阿拉伯语 | nl | 荷兰语 |
+---
 
-### 划词翻译
-选中文本后自动翻译为目标语言。
+## 🌐 网站支持情况
 
-![](images/select-trans.png)
+| 网站 | 支持状态 | 备注 |
+| :---- | :----: | :---- |
+| Google 搜索 | ✅ | 完美支持 |
+| Bing 搜索 | ✅ | 完美支持 |
+| GitHub | ✅ | 完美支持 |
+| 知乎 | ✅ | 完美支持 |
+| Stack Overflow | ✅ | 完美支持 |
+| YouTube | ✅ | 完美支持 |
+| Twitter (X) | ✅ | 完美支持 |
+| Quora | ⚠️ | 部分页面存在冲突 |
 
-**调节Hover Translate选项可以开启或关闭该功能。**
+---
 
-**Target Language选项可以选择划词翻译的目标语言。**
+## 🛠️ 开发与构建
 
-![](images/hover.png)
+本项目现在使用 **Vite** 进行 API 密钥安全管理和构建优化。
 
-## 各个网站的插件使用情况
-**完美支持：** :white_check_mark:
+### 安装与配置
+1. 克隆仓库并安装依赖: `npm install`
+2. 在根目录创建 `.env` 文件，填入你的 [百度翻译 API](https://fanyi-api.baidu.com/) 密钥:
+   ```env
+   VITE_BAIDU_APP_ID=你的AppID
+   VITE_BAIDU_KEY=你的密钥
+   ```
+3. 构建项目: `npm run build`
+4. 在浏览器中加载 `dist/` 目录。
 
-**支持但有bug：** :heavy_check_mark: 
+---
 
-**不支持：** :x:
+## 📜 许可证
+基于 GNU GPL v3.0 许可证发布。查看 `LICENSE` 文件了解更多详情。
 
-| 网站 | 是否支持 |
-| :----: | :--------: |
-| Google搜索 | :x:  |
-| Bing搜索 | :white_check_mark:  |
-| GitHub |  :heavy_check_mark: | 
-| 知乎 | :white_check_mark:  | 
-| stack overflow | :white_check_mark:  | 
-| quora | :x:  | 
-| YouTube| :white_check_mark:  |  
-| 推特| :white_check_mark:  | 
+---
 
-## 许可证
-
-MIT License
-
-## 开发日志
-
-- [note one](https://kelinkong.github.io/2024/03/05/input-translate/)
-- [note two](https://kelinkong.github.io/2024/03/07/input-translation/)
+*Made with ❤️ by [kelin]*
