@@ -4,7 +4,7 @@
     "description": "The name of the extension"
   },
   "extDesc": {
-    "message": "입력창(ChatGPT, 웹사이트 등)에서 타이핑하는 즉시 원활하게 번역하고, 웹페이지에서 텍스트를 드래그하여 자동으로 번역하세요. 탭을 전환할 필요가 없습니다.",
+    "message": "입력창(ChatGPT 등)에서 타이핑하는 즉시 번역하고, 웹페이지 텍스트를 드래그하여 자동 번역하세요. 탭 전환이 필요 없습니다.",
     "description": "The description of the extension"
   }
 }

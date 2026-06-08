@@ -4,7 +4,7 @@
     "description": "The name of the extension"
   },
   "extDesc": {
-    "message": "Translate text seamlessly in any input field (ChatGPT, Claude, etc.) and auto-translate selected text on webpages without switching tabs.",
+    "message": "Translate text in input fields (ChatGPT, Claude) seamlessly and auto-translate selected text on webpages without switching tabs.",
     "description": "The description of the extension"
   }
 }

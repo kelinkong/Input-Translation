@@ -4,7 +4,7 @@
     "description": "The name of the extension"
   },
   "extDesc": {
-    "message": "在任何输入框（ChatGPT、网页表单等）无缝翻译你键入的文本，并支持网页划词自动翻译，再也不用频繁切换翻译软件。",
+    "message": "在输入框（ChatGPT等）无缝翻译你键入的文本，并支持网页划词自动翻译，再也不用频繁切换翻译软件。",
     "description": "The description of the extension"
   }
 }
