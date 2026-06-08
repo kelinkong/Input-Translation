@@ -62,6 +62,12 @@ document.addEventListener('keyup', function (event) {
 
             console.log('Debounced translation triggering for:', textToTranslate);
 
+            // Check if extension context is still valid before sending message
+            if (!chrome.runtime?.id) {
+                console.warn("Extension context invalidated. Please refresh the page.");
+                return;
+            }
+
             chrome.runtime.sendMessage({ text: textToTranslate, lang: languageCode }, function (response) {
                 if (chrome.runtime.lastError || !response?.data?.trans_result) {
                     console.error('Translation message failed', chrome.runtime.lastError);
@@ -144,6 +150,12 @@ function translateSelectedText() {
                 width: rect.width,
                 height: rect.height
             };
+
+            // Check if extension context is still valid before sending message
+            if (!chrome.runtime?.id) {
+                console.warn("Extension context invalidated. Please refresh the page.");
+                return;
+            }
 
             chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
                 if (!response?.data?.trans_result) return;
