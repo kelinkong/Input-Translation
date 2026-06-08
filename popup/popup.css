@@ -124,31 +124,17 @@ code {
     margin: 10px 0;
 }
 .support-container {
-    margin: 5px 20px 15px 20px;
-    padding-top: 10px;
+    margin: 5px 20px 10px 20px;
+    padding-top: 8px;
     border-top: 1px solid #ddd;
-    text-align: center;
-}
-
-.bmc-btn {
-    display: inline-block;
-    background-color: #FFDD00;
-    color: #000000;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 8px;
-    transition: background-color 0.2s;
-}
-
-.bmc-btn:hover {
-    background-color: #FFC300;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
 
 .feedback-text {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
     margin: 0;
     padding: 0;
@@ -159,8 +145,20 @@ code {
 .feedback-text a {
     color: #177ed2;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .feedback-text a:hover {
     text-decoration: underline;
+}
+
+.bmc-link {
+    font-size: 11px;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.bmc-link:hover {
+    color: #FF813F;
 }
