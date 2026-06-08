@@ -52,7 +52,9 @@ function showTranslation(translation, absoluteRect) {
         position: 'absolute', // Scrolls naturally with the page
         backgroundColor: '#ffffff',
         border: '1px solid #e0e0e0',
-        width: '280px',
+        width: 'auto',
+        minWidth: '280px',
+        maxWidth: '450px',
         boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
         borderRadius: '10px',
         zIndex: '2147483647',
