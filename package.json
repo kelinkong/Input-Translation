@@ -1,6 +1,6 @@
 {
   "name": "input-translation",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
   "license": "GPL-3.0",
   "type": "module",

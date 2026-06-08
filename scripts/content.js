@@ -111,10 +111,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 // Close panel when clicking outside
 document.addEventListener('click', function (event) {
-    const panel = document.getElementById('translate-panel');
-    if (panel && !panel.contains(event.target)) {
-        panel.remove();
-    }
+    const panels = document.querySelectorAll('#translate-panel');
+    panels.forEach(p => {
+        if (!p.contains(event.target)) {
+            p.remove();
+        }
+    });
 });
 
 function translateSelectedText() {

@@ -19,18 +19,21 @@
 let panel; 
 
 function showTranslation(translation, rect) {
-    // console.log('showTranslation called with translation:', translation);
+    // Clean up any existing panels to prevent duplicates getting stuck
+    const existingPanels = document.querySelectorAll('#translate-panel');
+    existingPanels.forEach(p => p.remove());
+
     panel = document.createElement('div');
     panel.id = 'translate-panel';
     let innerHTMLContent = `
-    <div id="translate-panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #F5F5F5; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+    <div class="translate-panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #F5F5F5; border-top-left-radius: 10px; border-top-right-radius: 10px; cursor: default;">
         <div style="display: inline-flex; align-items: center;">
-            <img id="logo" src="${chrome.runtime.getURL('images/icon-32.png')}" style="width: 18px; height: 18px;">
+            <img class="logo" src="${chrome.runtime.getURL('images/icon-32.png')}" style="width: 18px; height: 18px;">
             <span style="margin-left: 5px;">Input Translation</span>
         </div>
-        <button id="close-button" style="border: none; background: transparent; font-size: 25px !important; margin-top: -5px; padding: 0;">×</button>
+        <button class="close-button" style="border: none; background: transparent; font-size: 25px !important; margin-top: -5px; padding: 0; cursor: pointer;">×</button>
     </div>
-    <div id="translate-panel-content" style="padding: 5px 15px; margin-top: 0; margin-bottom: 0;text-align: justify;">${translation}</div>
+    <div class="translate-panel-content" style="padding: 5px 15px; margin-top: 0; margin-bottom: 0;text-align: justify;">${translation}</div>
 `;
     panel.innerHTML = innerHTMLContent;
     panel.style.position = 'fixed';
@@ -46,14 +49,20 @@ function showTranslation(translation, rect) {
     panel.style.fontSize = '16px';
     panel.style.borderRadius = '10px';
     panel.style.color = '#333';
-    document.body.appendChild(panel);
-    var closeButton = document.getElementById('close-button');
-    document.getElementById('translate-panel-header').addEventListener('click', function (event) {
-        console.log('panel header clicked');
-        if (event.target.id === 'close-button') {
-            console.log('closeButton clicked');
+    
+    // Bind event directly to the button within this specific panel
+    const closeButton = panel.querySelector('.close-button');
+    if (closeButton) {
+        closeButton.addEventListener('click', function (event) {
             panel.remove();
             window.getSelection().removeAllRanges();
-        }
+        });
+    }
+
+    // Prevent clicks inside the panel from propagating and triggering the outside-click closer
+    panel.addEventListener('click', function(event) {
+        event.stopPropagation();
     });
+
+    document.body.appendChild(panel);
 }
