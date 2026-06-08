@@ -121,10 +121,10 @@ code {
     align-items: center;
 }
 .text-container{
-    margin: 10px 0;
+    margin: 10px 0 5px 0;
 }
 .support-container {
-    margin: 5px 20px 10px 20px;
+    margin: 0px 20px 10px 20px;
     padding-top: 8px;
     border-top: 1px solid #ddd;
     display: flex;
