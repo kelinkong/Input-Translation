@@ -135,10 +135,20 @@ function translateSelectedText() {
         const text = selectedText.toString().trim();
         if (text && !isSelectionInInput(selectedText)) {
             const rect = selectedText.getRangeAt(0).getBoundingClientRect();
+            // Capture absolute coordinates immediately before any potential scrolling
+            const absoluteRect = {
+                top: rect.top + window.scrollY,
+                bottom: rect.bottom + window.scrollY,
+                left: rect.left + window.scrollX,
+                right: rect.right + window.scrollX,
+                width: rect.width,
+                height: rect.height
+            };
+
             chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
                 if (!response?.data?.trans_result) return;
                 const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
-                showTranslation(translatedText, rect);
+                showTranslation(translatedText, absoluteRect);
             });
         }
     }, 200);
