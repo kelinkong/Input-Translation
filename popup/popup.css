@@ -3,7 +3,8 @@ body {
     font-size: 16px;
     margin: 0;
     width: 280px;
-    height: 250px;
+    min-height: 250px;
+    height: auto;
     display: flex;
     background-color: #e3e2e2;
     color: #333;
@@ -121,4 +122,45 @@ code {
 }
 .text-container{
     margin: 10px 0;
+}
+.support-container {
+    margin: 5px 20px 15px 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}
+
+.bmc-btn {
+    display: inline-block;
+    background-color: #FFDD00;
+    color: #000000;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s;
+}
+
+.bmc-btn:hover {
+    background-color: #FFC300;
+}
+
+.feedback-text {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.feedback-text a {
+    color: #177ed2;
+    text-decoration: none;
+}
+
+.feedback-text a:hover {
+    text-decoration: underline;
 }
