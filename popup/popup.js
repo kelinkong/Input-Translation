@@ -23,7 +23,16 @@ document.getElementById('target-language').addEventListener('change', saveSettin
 document.getElementById('input-translate').addEventListener('change', saveSettings);
 
 window.onload = function () {
-    chrome.storage.sync.get(['autoTranslate', 'targetLanguage', 'inputTranslate'], function (result) {
+    const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    let defaultTargetLang = 'en';
+    if (browserLang.startsWith('zh')) defaultTargetLang = 'zh';
+    else if (browserLang.startsWith('ko')) defaultTargetLang = 'kor';
+    else if (browserLang.startsWith('ja')) defaultTargetLang = 'jp';
+    else if (browserLang.startsWith('es')) defaultTargetLang = 'spa';
+    else if (browserLang.startsWith('fr')) defaultTargetLang = 'fra';
+    else if (browserLang.startsWith('de')) defaultTargetLang = 'de';
+
+    chrome.storage.sync.get({ autoTranslate: true, targetLanguage: defaultTargetLang, inputTranslate: true }, function (result) {
         document.getElementById('auto-translate').checked = result.autoTranslate;
         document.getElementById('target-language').value = result.targetLanguage;
         document.getElementById('input-translate').checked = result.inputTranslate;

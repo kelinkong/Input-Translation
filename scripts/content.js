@@ -16,8 +16,18 @@ let inputTranslate;
 const SUPPORTED_LANGS = 'en|zh|fra|de|kor|jp|spa|th|ara|ru|pt|it|el|nl';
 const LANG_REGEX = new RegExp(`([\\s\\S]*)\\/(${SUPPORTED_LANGS})$`);
 
+// Smart default language detection based on user's browser setting
+const browserLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+let defaultTargetLang = 'en';
+if (browserLang.startsWith('zh')) defaultTargetLang = 'zh';
+else if (browserLang.startsWith('ko')) defaultTargetLang = 'kor';
+else if (browserLang.startsWith('ja')) defaultTargetLang = 'jp';
+else if (browserLang.startsWith('es')) defaultTargetLang = 'spa';
+else if (browserLang.startsWith('fr')) defaultTargetLang = 'fra';
+else if (browserLang.startsWith('de')) defaultTargetLang = 'de';
+
 // Load settings
-chrome.storage.sync.get({ autoTranslate: true, targetLanguage: 'zh', inputTranslate: true }, function (result) {
+chrome.storage.sync.get({ autoTranslate: true, targetLanguage: defaultTargetLang, inputTranslate: true }, function (result) {
     targetLanguage = result.targetLanguage;
     autoTranslate = result.autoTranslate;
     inputTranslate = result.inputTranslate;

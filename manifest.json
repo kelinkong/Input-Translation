@@ -1,8 +1,9 @@
 {
     "manifest_version": 3,
-    "name": "Input Translation",
-    "version": "1.2.2",
-    "description": "Translate text in input fields and automatically translate selected words or paragraphs.",
+    "name": "__MSG_extName__",
+    "version": "1.2.3",
+    "default_locale": "en",
+    "description": "__MSG_extDesc__",
     "permissions": [
         "activeTab",
         "tabs",
