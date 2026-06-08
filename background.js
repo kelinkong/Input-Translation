@@ -3,9 +3,10 @@
  * Copyright (C) 2026 kelin
  */
 
-import { MD5 } from './scripts/lib/md5.js';
-
 console.log('Background script initialized');
+
+// REPLACE THIS with your actual deployed proxy URL
+const PROXY_URL = 'https://baidu-translate-proxy.kelin-kong13.workers.dev/';
 
 // --- Omnibox (Address Bar) Support ---
 const SUPPORTED_LANGS = 'en|zh|fra|de|kor|jp|spa|th|ara|ru|pt|it|el|nl';
@@ -76,43 +77,70 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
 });
 
+// --- Translation Cache ---
+const translationCache = new Map();
+const MAX_CACHE_SIZE = 500;
+
+function getCacheKey(text, lang) {
+    return `${lang}:${text}`;
+}
+
+function getFromCache(text, lang) {
+    const key = getCacheKey(text, lang);
+    if (translationCache.has(key)) {
+        // Move to top to simulate LRU
+        const value = translationCache.get(key);
+        translationCache.delete(key);
+        translationCache.set(key, value);
+        return value;
+    }
+    return null;
+}
+
+function setInCache(text, lang, data) {
+    const key = getCacheKey(text, lang);
+    if (translationCache.size >= MAX_CACHE_SIZE) {
+        // Remove the oldest entry (the first item in the Map)
+        const oldestKey = translationCache.keys().next().value;
+        translationCache.delete(oldestKey);
+    }
+    translationCache.set(key, data);
+}
+
 function translateText(text, lang, callback) {
-    console.log('Translating text:', text);
-    const appid = import.meta.env.VITE_BAIDU_APP_ID;
-    const key = import.meta.env.VITE_BAIDU_KEY;
-    const salt = (new Date).getTime();
-    const str1 = appid + text + salt + key;
-    const sign = MD5(str1);
+    console.log('Translating text via proxy:', text);
+    
+    // Check Cache first
+    const cachedData = getFromCache(text, lang);
+    if (cachedData) {
+        console.log('Serving translation from cache');
+        callback(cachedData);
+        return;
+    }
 
-    // 使用 URLSearchParams 构造 POST body
-    const body = new URLSearchParams({
-        q: text,
-        appid: appid,
-        salt: salt,
-        from: 'auto',
-        to: lang,
-        sign: sign
-    });
-
-    console.log('Requesting Baidu API via POST...');
-
-    fetch('https://api.fanyi.baidu.com/api/trans/vip/translate', {
+    fetch(PROXY_URL, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
-        body: body
+        body: JSON.stringify({
+            text: text,
+            lang: lang
+        })
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Proxy response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Baidu API Response:', data);
+        console.log('Proxy Response:', data);
         if (data.error_code) {
             console.error('Baidu API Error:', data.error_code, data.error_msg);
+        } else if (data.trans_result) {
+             // Only cache successful translations
+             setInCache(text, lang, data);
         }
         callback(data);
     })

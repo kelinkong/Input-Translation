@@ -9,9 +9,7 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "javascript-obfuscator": "^5.4.1",
     "vite": "^5.0.0",
-    "vite-plugin-javascript-obfuscator": "^3.1.0",
     "vite-plugin-static-copy": "^1.0.0"
   }
 }

@@ -14,7 +14,7 @@ let autoTranslate;
 let inputTranslate;
 
 const SUPPORTED_LANGS = 'en|zh|fra|de|kor|jp|spa|th|ara|ru|pt|it|el|nl';
-const LANG_REGEX = new RegExp(`(.*)\\/(${SUPPORTED_LANGS})$`);
+const LANG_REGEX = new RegExp(`([\\s\\S]*)\\/(${SUPPORTED_LANGS})$`);
 
 // Load settings
 chrome.storage.sync.get({ autoTranslate: true, targetLanguage: 'zh', inputTranslate: true }, function (result) {
@@ -29,12 +29,17 @@ chrome.storage.sync.get({ autoTranslate: true, targetLanguage: 'zh', inputTransl
 // Optimized Input Listener
 document.addEventListener('keyup', function (event) {
     const el = event.target;
-    if (!inputTranslate || !(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
+    
+    const isInputOrTextarea = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
+    const isContentEditable = el.isContentEditable;
+    
+    if (!inputTranslate || !(isInputOrTextarea || isContentEditable)) return;
 
-    const text = el.value;
+    // Use value for inputs, and innerText/textContent for contenteditable
+    const text = isInputOrTextarea ? el.value : (el.innerText || el.textContent);
     
     // 预检测：如果输入不包含斜杠，或者斜杠后没有任何字符，直接跳过
-    if (!text.includes('/')) return;
+    if (!text || !text.includes('/')) return;
 
     clearTimeout(timer);
     timer = setTimeout(() => {
@@ -53,14 +58,39 @@ document.addEventListener('keyup', function (event) {
                     return;
                 }
 
-                const translatedText = response.data.trans_result[0].dst;
-                el.value = translatedText;
+                const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
                 
-                // 触发事件同步状态
-                const events = ['input', 'change'];
-                events.forEach(evt => {
-                    el.dispatchEvent(new Event(evt, { bubbles: true }));
-                });
+                if (isContentEditable) {
+                    el.focus();
+                    // Select all text using Selection API
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    // Insert translated text
+                    document.execCommand('insertText', false, translatedText);
+                } else {
+                    // For React/Vue controlled inputs, directly setting value might not trigger state update.
+                    // We attempt to use native setters.
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                    const nativeTextAreaValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+                    
+                    if (el.tagName === 'INPUT' && nativeInputValueSetter) {
+                        nativeInputValueSetter.call(el, translatedText);
+                    } else if (el.tagName === 'TEXTAREA' && nativeTextAreaValueSetter) {
+                        nativeTextAreaValueSetter.call(el, translatedText);
+                    } else {
+                        el.value = translatedText;
+                    }
+                    
+                    // 触发事件同步状态
+                    const events = ['input', 'change'];
+                    events.forEach(evt => {
+                        el.dispatchEvent(new Event(evt, { bubbles: true }));
+                    });
+                }
             });
         }
     }, 600); // 优化后的防抖时间
@@ -95,7 +125,8 @@ function translateSelectedText() {
             const rect = selectedText.getRangeAt(0).getBoundingClientRect();
             chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
                 if (!response?.data?.trans_result) return;
-                showTranslation(response.data.trans_result[0].dst, rect);
+                const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
+                showTranslation(translatedText, rect);
             });
         }
     }, 200);
@@ -108,5 +139,5 @@ function isSelectionInInput(selection) {
 function isTextInInput(node) {
     if (!node) return false;
     const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
 }
