@@ -71,12 +71,18 @@ export default {
         "Access-Control-Allow-Origin": corsOrigin,
       };
 
-      // --- 🚀 Channel 1: Free Google Translate API ---
+      // --- 🚀 Channel 1: Free Google Translate API (With 1000ms Timeout) ---
       try {
         const googleLang = mapBaiduToGoogleLang(lang);
         const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${googleLang}&dt=t&q=${encodeURIComponent(text)}`;
         
-        const googleRes = await fetch(googleUrl);
+        // 1000ms hard timeout for Google API
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+        const googleRes = await fetch(googleUrl, { signal: controller.signal });
+        clearTimeout(timeoutId); // Clear timeout if fetch succeeds early
+
         if (googleRes.ok) {
           const googleData = await googleRes.json();
           let translatedText = '';
