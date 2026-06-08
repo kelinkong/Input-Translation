@@ -175,11 +175,12 @@ code {
 
 .coffee-icon {
     font-size: 13px;
-    filter: sepia(1) saturate(100) hue-rotate(350deg) brightness(0.9);
+    /* This filter approximates the Buy Me a Coffee official yellow (#FFDD00) */
+    filter: invert(79%) sepia(50%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(105%);
 }
 
 .bmc-link:hover {
-    color: #FF813F;
+    color: #e5c000; /* A slightly darker shade of the BMAC yellow for readable text */
 }
 
 .bmc-link:hover .coffee-icon {
