@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Input Translation - 輸入翻譯與劃詞翻譯",
+    "description": "The name of the extension"
+  },
+  "extDesc": {
+    "message": "在任何輸入框（ChatGPT、網頁表單等）無縫翻譯你鍵入的文本，並支援網頁劃詞自動翻譯，再也不用頻繁切換翻譯軟體。",
+    "description": "The description of the extension"
+  }
+}
