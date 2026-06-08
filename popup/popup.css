@@ -167,10 +167,22 @@ code {
     color: #888;
     text-decoration: none;
     font-weight: bold;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.coffee-icon {
+    font-size: 13px;
+    filter: sepia(1) saturate(100) hue-rotate(350deg) brightness(0.9);
 }
 
 .bmc-link:hover {
     color: #FF813F;
-    text-decoration: underline;
+}
+
+.bmc-link:hover .coffee-icon {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
 }
