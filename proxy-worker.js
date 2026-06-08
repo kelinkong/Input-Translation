@@ -23,6 +23,34 @@ function mapBaiduToGoogleLang(baiduLang) {
   return map[baiduLang] || baiduLang;
 }
 
+// Simple In-Memory Rate Limiter (Per Cloudflare Isolate)
+const ipRequests = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute window
+const MAX_REQUESTS_PER_MIN = 20; // Max 20 translations per minute per IP
+
+function checkRateLimit(ip) {
+  if (!ip) return true; // Pass if IP is missing for some reason
+  const now = Date.now();
+  const record = ipRequests.get(ip) || { count: 0, startTime: now };
+  
+  if (now - record.startTime > RATE_LIMIT_WINDOW) {
+    record.count = 1;
+    record.startTime = now;
+  } else {
+    record.count++;
+  }
+  
+  ipRequests.set(ip, record);
+  
+  // Optional: Clean up old entries occasionally to prevent memory leaks in the isolate
+  if (ipRequests.size > 1000) {
+     const oldestKey = ipRequests.keys().next().value;
+     ipRequests.delete(oldestKey);
+  }
+  
+  return record.count <= MAX_REQUESTS_PER_MIN;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const ALLOWED_ORIGINS = [
@@ -56,12 +84,32 @@ export default {
       });
     }
 
+    // 🔒 IP Rate Limiting Check
+    const clientIP = request.headers.get("cf-connecting-ip") || "";
+    if (!checkRateLimit(clientIP)) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+        status: 429,
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": corsOrigin
+        }
+      });
+    }
+
     try {
       const { text, lang } = await request.json();
 
       if (!text || !lang) {
         return new Response(JSON.stringify({ error: "Missing parameters" }), { 
           status: 400,
+          headers: { "Access-Control-Allow-Origin": corsOrigin }
+        });
+      }
+
+      // 🔒 Hard Text Length Limit Check (2000 characters)
+      if (text.length > 2000) {
+        return new Response(JSON.stringify({ error: "Text too long. Maximum 2000 characters allowed per request." }), { 
+          status: 413, // Payload Too Large
           headers: { "Access-Control-Allow-Origin": corsOrigin }
         });
       }
