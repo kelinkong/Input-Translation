@@ -111,6 +111,7 @@ code {
     padding: 2px 4px;
     border-radius: 4px;
     color: #fff;
+    font-size: 11px;
 }
 .icon {
     width: 16px;
@@ -120,70 +121,86 @@ code {
     display: flex;
     align-items: center;
 }
-.text-container{
-    margin: 10px 0 5px 0;
-}
-.support-container {
-    margin: 0px 20px 10px 20px;
-    padding-top: 8px;
-    border-top: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+
+/* --- Clean Info Section --- */
+.info-section {
+    margin: 12px 16px 8px 16px;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
 }
 
-.feedback-text {
+.instruction-text {
     font-size: 11px;
-    color: #666;
+    color: #555;
     margin: 0;
-    padding: 0;
-    text-align: center;
-    line-height: 1.4;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.doc-link {
+    display: inline-block;
+    margin-top: 6px;
+    color: #177ed2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.doc-link:hover {
+    text-decoration: underline;
+}
+
+/* --- Clean Footer Section --- */
+.footer-section {
+    margin-top: auto;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    background-color: #ebebeb;
 }
 
 .action-links {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 11px;
 }
 
-.email-link {
-    color: #177ed2;
+.footer-link {
+    color: #666;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 500;
+    transition: color 0.2s;
 }
 
-.email-link:hover {
-    text-decoration: underline;
+.footer-link:hover {
+    color: #333;
 }
 
 .dot-divider {
-    color: #ccc;
+    color: #bbb;
 }
 
 .bmc-link {
-    color: #888;
+    color: #666;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 500;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
 }
 
 .coffee-icon {
     font-size: 13px;
-    /* This filter approximates the Buy Me a Coffee official yellow (#FFDD00) */
     filter: invert(79%) sepia(50%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(105%);
 }
 
 .bmc-link:hover {
-    color: #e5c000; /* A slightly darker shade of the BMAC yellow for readable text */
+    color: #e5c000;
 }
 
 .bmc-link:hover .coffee-icon {
     transform: scale(1.1);
-    transition: transform 0.2s ease;
 }
