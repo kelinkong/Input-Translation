@@ -127,43 +127,116 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 // Close panel when clicking outside
 document.addEventListener('click', function (event) {
+    // Remove translation panels
     const panels = document.querySelectorAll('#translate-panel');
     panels.forEach(p => {
         if (!p.contains(event.target)) {
             p.remove();
         }
     });
+
+    // Remove quick translate button if clicked outside
+    if (translateButton && !translateButton.contains(event.target)) {
+        translateButton.remove();
+        translateButton = null;
+    }
 });
 
-function translateSelectedText() {
+let translateButton = null;
+
+function translateSelectedText(event) {
     window.setTimeout(() => {
         const selectedText = window.getSelection();
         const text = selectedText.toString().trim();
-        if (text && !isSelectionInInput(selectedText)) {
-            const rect = selectedText.getRangeAt(0).getBoundingClientRect();
-            // Capture absolute coordinates immediately before any potential scrolling
-            const absoluteRect = {
-                top: rect.top + window.scrollY,
-                bottom: rect.bottom + window.scrollY,
-                left: rect.left + window.scrollX,
-                right: rect.right + window.scrollX,
-                width: rect.width,
-                height: rect.height
-            };
+        
+        // Remove existing button
+        if (translateButton) {
+            translateButton.remove();
+            translateButton = null;
+        }
 
-            // Check if extension context is still valid before sending message
-            if (!chrome.runtime?.id) {
-                console.warn("Extension context invalidated. Please refresh the page.");
+        // If no text or clicked inside existing panel, do nothing
+        if (!text || isSelectionInInput(selectedText)) return;
+        
+        // Check if the click was on our own UI elements
+        if (event && event.target) {
+            const target = event.target;
+            if (target.closest('#translate-panel') || target.closest('#quick-translate-btn')) {
                 return;
             }
-
-            chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
-                if (!response?.data?.trans_result) return;
-                const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
-                showTranslation(translatedText, absoluteRect);
-            });
         }
+
+        const rect = selectedText.getRangeAt(0).getBoundingClientRect();
+        const absoluteRect = {
+            top: rect.top + window.scrollY,
+            bottom: rect.bottom + window.scrollY,
+            left: rect.left + window.scrollX,
+            right: rect.right + window.scrollX,
+            width: rect.width,
+            height: rect.height
+        };
+
+        showQuickTranslateButton(text, absoluteRect);
     }, 200);
+}
+
+function showQuickTranslateButton(text, absoluteRect) {
+    translateButton = document.createElement('div');
+    translateButton.id = 'quick-translate-btn';
+    translateButton.title = 'Translate';
+    translateButton.innerHTML = `<img src="${chrome.runtime.getURL('images/icon-32.png')}" style="width: 16px; height: 16px; display: block;">`;
+    
+    Object.assign(translateButton.style, {
+        position: 'absolute',
+        top: (absoluteRect.bottom + 5) + 'px',
+        left: absoluteRect.right + 'px',
+        backgroundColor: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: '6px',
+        padding: '4px',
+        cursor: 'pointer',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        zIndex: '2147483646',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'transform 0.1s ease',
+        userSelect: 'none'
+    });
+
+    translateButton.addEventListener('mouseover', () => {
+        translateButton.style.transform = 'scale(1.1)';
+        translateButton.style.backgroundColor = '#f8f9fa';
+    });
+    translateButton.addEventListener('mouseout', () => {
+        translateButton.style.transform = 'scale(1)';
+        translateButton.style.backgroundColor = '#fff';
+    });
+
+    translateButton.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevent selection clearing
+        e.stopPropagation();
+        
+        translateButton.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>`;
+        
+        // Check if extension context is still valid
+        if (!chrome.runtime?.id) {
+            console.warn("Extension context invalidated. Please refresh the page.");
+            translateButton.remove();
+            return;
+        }
+
+        chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
+            translateButton.remove();
+            translateButton = null;
+            if (!response?.data?.trans_result) return;
+            const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
+            showTranslation(translatedText, absoluteRect);
+        });
+    });
+
+    document.body.appendChild(translateButton);
 }
 
 function isSelectionInInput(selection) {
