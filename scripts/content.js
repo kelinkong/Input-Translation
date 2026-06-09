@@ -228,7 +228,9 @@ function showQuickTranslateButton(text, absoluteRect) {
         }
 
         chrome.runtime.sendMessage({ text: text, lang: targetLanguage }, function (response) {
-            translateButton.remove();
+            if (translateButton && translateButton.parentNode) {
+                translateButton.remove();
+            }
             translateButton = null;
             if (!response?.data?.trans_result) return;
             const translatedText = response.data.trans_result.map(res => res.dst).join('\n');
