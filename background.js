@@ -107,8 +107,85 @@ function setInCache(text, lang, data) {
     translationCache.set(key, data);
 }
 
+// Helper to map Baidu language codes to Google Translate language codes
+function mapBaiduToGoogleLang(baiduLang) {
+    const map = {
+        'zh': 'zh-CN',
+        'jp': 'ja',
+        'kor': 'ko',
+        'spa': 'es',
+        'fra': 'fr',
+        'ara': 'ar'
+    };
+    return map[baiduLang] || baiduLang;
+}
+
+async function fetchGoogleTranslate(text, lang) {
+    const googleLang = mapBaiduToGoogleLang(lang);
+    const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${googleLang}&dt=t&q=${encodeURIComponent(text)}`;
+    
+    // 1500ms hard timeout for Google API to quickly fail for users behind GFW
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+    try {
+        const response = await fetch(googleUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error('Google Translate HTTP Error');
+        
+        const googleData = await response.json();
+        let translatedText = '';
+        
+        if (googleData && googleData[0]) {
+            googleData[0].forEach(item => {
+                if (item[0]) translatedText += item[0];
+            });
+        }
+
+        if (translatedText) {
+            // Mock Baidu's response structure so the content script doesn't need to change
+            return {
+                from: 'auto',
+                to: lang,
+                trans_result: [{
+                    src: text,
+                    dst: translatedText
+                }]
+            };
+        }
+        throw new Error('Google Translate empty result');
+    } catch (error) {
+        clearTimeout(timeoutId);
+        throw error; // Let the caller handle the fallback
+    }
+}
+
+async function fetchBaiduProxy(text, lang) {
+    const response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            text: text,
+            lang: lang
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('Proxy response was not ok');
+    }
+    
+    const data = await response.json();
+    if (data.error_code) {
+        console.error('Baidu API Error:', data.error_code, data.error_msg);
+    }
+    return data;
+}
+
 function translateText(text, lang, callback) {
-    console.log('Translating text via proxy:', text);
+    console.log('Translating text:', text);
     
     // Check Cache first
     const cachedData = getFromCache(text, lang);
@@ -118,34 +195,25 @@ function translateText(text, lang, callback) {
         return;
     }
 
-    fetch(PROXY_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            text: text,
-            lang: lang
+    // Scheme A: Client-side primary fetch (Google) -> Cloudflare fallback (Baidu)
+    fetchGoogleTranslate(text, lang)
+        .then(data => {
+            console.log('Google Translate Success (Client-side)');
+            if (data && data.trans_result) setInCache(text, lang, data);
+            callback(data);
         })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Proxy response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Proxy Response:', data);
-        if (data.error_code) {
-            console.error('Baidu API Error:', data.error_code, data.error_msg);
-        } else if (data.trans_result) {
-             // Only cache successful translations
-             setInCache(text, lang, data);
-        }
-        callback(data);
-    })
-    .catch(error => {
-        console.error('Fetch Error:', error);
-        callback(null);
-    });
+        .catch(googleError => {
+            console.warn('Google Translate failed locally, falling back to Proxy/Baidu:', googleError.message);
+            // Fallback to our proxy
+            fetchBaiduProxy(text, lang)
+                .then(data => {
+                    console.log('Proxy/Baidu Translate Success');
+                    if (data && data.trans_result) setInCache(text, lang, data);
+                    callback(data);
+                })
+                .catch(proxyError => {
+                    console.error('All translation channels failed:', proxyError);
+                    callback(null);
+                });
+        });
 }

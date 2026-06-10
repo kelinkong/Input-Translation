@@ -119,52 +119,7 @@ export default {
         "Access-Control-Allow-Origin": corsOrigin,
       };
 
-      // --- 🚀 Channel 1: Free Google Translate API (With 1000ms Timeout) ---
-      try {
-        const googleLang = mapBaiduToGoogleLang(lang);
-        const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${googleLang}&dt=t&q=${encodeURIComponent(text)}`;
-        
-        // 1000ms hard timeout for Google API
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000);
-
-        const googleRes = await fetch(googleUrl, { 
-          signal: controller.signal,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-          }
-        });
-        clearTimeout(timeoutId); // Clear timeout if fetch succeeds early
-
-        if (googleRes.ok) {
-          const googleData = await googleRes.json();
-          let translatedText = '';
-          
-          if (googleData && googleData[0]) {
-            googleData[0].forEach(item => {
-              if (item[0]) translatedText += item[0];
-            });
-          }
-
-          if (translatedText) {
-            // Mock Baidu's response structure so the extension doesn't need to change
-            const mockBaiduResponse = {
-              from: 'auto',
-              to: lang,
-              trans_result: [{
-                src: text,
-                dst: translatedText
-              }]
-            };
-            return new Response(JSON.stringify(mockBaiduResponse), { headers: commonHeaders });
-          }
-        }
-      } catch (googleError) {
-        // Silently catch Google API errors (e.g., rate limits) and fallback to Baidu
-        console.warn("Google Translate failed, falling back to Baidu:", googleError);
-      }
-
-      // --- 💰 Channel 2: Fallback to Paid Baidu API ---
+      // --- 💰 Paid Baidu API ---
       const appid = env.BAIDU_APP_ID;
       const key = env.BAIDU_KEY;
       
