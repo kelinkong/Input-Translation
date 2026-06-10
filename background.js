@@ -114,20 +114,24 @@ let canReachGoogle = null; // null = untested, true = connected, false = blocked
 async function checkNetworkEnvironment() {
     try {
         const controller = new AbortController();
-        // Give the proxy a bit more time to connect (2000ms instead of 1000ms)
         const timeoutId = setTimeout(() => controller.abort(), 2000);
-        // Ping Google's generate_204 endpoint (very lightweight, meant for captive portal checks)
-        const res = await fetch('https://clients3.google.com/generate_204', { 
+        // Ping the actual translation endpoint we intend to use, rather than a generic 204 endpoint 
+        // which might be intercepted or ignored by certain proxy rules.
+        const testUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=en&dt=t&q=test';
+        const res = await fetch(testUrl, { 
             method: 'GET', 
-            mode: 'no-cors',
             signal: controller.signal 
         });
         clearTimeout(timeoutId);
-        canReachGoogle = true;
-        console.log('Network Check: Google is reachable (Overseas/Proxy).');
+        if (res.ok) {
+            canReachGoogle = true;
+            console.log('Network Check: Google Translate is reachable (Overseas/Proxy).');
+        } else {
+            throw new Error('Google Translate HTTP Error');
+        }
     } catch (e) {
         canReachGoogle = false;
-        console.log('Network Check: Google is blocked (Mainland China). Skipping Google API.');
+        console.log('Network Check: Google Translate is blocked or timed out. Skipping Google API.', e.message);
     }
 }
 
