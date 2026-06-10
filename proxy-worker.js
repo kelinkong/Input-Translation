@@ -187,12 +187,21 @@ export default {
         body: params
       });
 
-      const baiduData = await baiduResponse.json();
+      if (!baiduResponse.ok) {
+        throw new Error(`Baidu API HTTP Error: ${baiduResponse.status}`);
+      }
+
+      let baiduData;
+      try {
+        baiduData = await baiduResponse.json();
+      } catch (parseError) {
+         throw new Error("Failed to parse Baidu API response.");
+      }
 
       return new Response(JSON.stringify(baiduData), { headers: commonHeaders });
       
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
+      return new Response(JSON.stringify({ error: err.message || "Internal Proxy Error" }), {
         status: 500,
         headers: { 
           "Content-Type": "application/json", 
