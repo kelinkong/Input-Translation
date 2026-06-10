@@ -114,7 +114,8 @@ let canReachGoogle = null; // null = untested, true = connected, false = blocked
 async function checkNetworkEnvironment() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000);
+        // Give the proxy a bit more time to connect (2000ms instead of 1000ms)
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
         // Ping Google's generate_204 endpoint (very lightweight, meant for captive portal checks)
         const res = await fetch('https://clients3.google.com/generate_204', { 
             method: 'GET', 
@@ -157,9 +158,9 @@ async function fetchGoogleTranslate(text, lang) {
     const googleLang = mapBaiduToGoogleLang(lang);
     const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${googleLang}&dt=t&q=${encodeURIComponent(text)}`;
     
-    // 1500ms hard timeout for Google API to quickly fail for users behind GFW
+    // 2000ms hard timeout for Google API to accommodate slower proxies while still failing fast for GFW
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
 
     try {
         const response = await fetch(googleUrl, { signal: controller.signal });
@@ -217,87 +218,6 @@ async function fetchBaiduProxy(text, lang) {
     return data;
 }
 
-// Helper to map Baidu language codes to Tencent Transmart language codes
-function mapBaiduToTencentLang(baiduLang) {
-    const map = {
-        'zh': 'zh',
-        'en': 'en',
-        'jp': 'ja',
-        'kor': 'ko',
-        'fra': 'fr',
-        'spa': 'es',
-        'de': 'de',
-        'ru': 'ru',
-        'pt': 'pt',
-        'it': 'it',
-        'ara': 'ar'
-    };
-    return map[baiduLang] || baiduLang;
-}
-
-async function fetchTencentTranslate(text, lang) {
-    // Tencent Transmart typically detects source language automatically.
-    const targetLang = mapBaiduToTencentLang(lang);
-    
-    // We use a common public endpoint utilized by the Transmart web interface
-    const tencentUrl = 'https://transmart.qq.com/api/imt';
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-    try {
-        const response = await fetch(tencentUrl, {
-            method: 'POST',
-            signal: controller.signal,
-            headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                // Adding a minimal client string often required by public APIs
-                'client': 'fanyiweb'
-            },
-            body: JSON.stringify({
-                header: {
-                    fn: "auto_translation",
-                    session: "",
-                    client_key: "browser-" + Date.now() + "-" + Math.floor(Math.random() * 10000)
-                },
-                type: "plain",
-                model_category: "normal",
-                text_domain: "general",
-                source: {
-                    lang: "auto",
-                    text_list: [text]
-                },
-                target: {
-                    lang: targetLang
-                }
-            })
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) throw new Error(`Tencent API HTTP Error: ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data && data.auto_translation && data.auto_translation.length > 0) {
-            // Reconstruct the response to match the expected Baidu format
-            return {
-                from: 'auto',
-                to: lang,
-                trans_result: [{
-                    src: text,
-                    dst: data.auto_translation[0]
-                }]
-            };
-        }
-        throw new Error('Tencent API returned empty result');
-    } catch (error) {
-        clearTimeout(timeoutId);
-        throw error;
-    }
-}
-
 function translateText(text, lang, callback) {
     console.log('Translating text:', text);
     
@@ -309,7 +229,7 @@ function translateText(text, lang, callback) {
         return;
     }
 
-    // Scheme B: Triple-Channel Waterfall -> Google -> Tencent -> Baidu(Proxy)
+    // Scheme B: Dual-Channel Waterfall -> Google -> Baidu(Proxy)
     fetchGoogleTranslate(text, lang)
         .then(data => {
             console.log('Google Translate Success (Channel 1)');
@@ -318,28 +238,17 @@ function translateText(text, lang, callback) {
         })
         .catch(googleError => {
             console.warn('Google failed or skipped:', googleError.message);
-            console.log('Falling back to Tencent Transmart (Channel 2)...');
+            console.log('Falling back to Worker Proxy/Baidu (Channel 2 - Failsafe)...');
             
-            fetchTencentTranslate(text, lang)
+            fetchBaiduProxy(text, lang)
                 .then(data => {
-                    console.log('Tencent Transmart Success (Channel 2)');
+                    console.log('Proxy/Baidu Translate Success (Channel 2)');
                     if (data && data.trans_result) setInCache(text, lang, data);
                     callback(data);
                 })
-                .catch(tencentError => {
-                    console.warn('Tencent Transmart failed:', tencentError.message);
-                    console.log('Falling back to Worker Proxy/Baidu (Channel 3 - Failsafe)...');
-                    
-                    fetchBaiduProxy(text, lang)
-                        .then(data => {
-                            console.log('Proxy/Baidu Translate Success (Channel 3)');
-                            if (data && data.trans_result) setInCache(text, lang, data);
-                            callback(data);
-                        })
-                        .catch(proxyError => {
-                            console.error('All translation channels (Google, Tencent, Baidu) exhausted and failed:', proxyError);
-                            callback(null);
-                        });
+                .catch(proxyError => {
+                    console.error('All translation channels (Google, Baidu) exhausted and failed:', proxyError);
+                    callback(null);
                 });
         });
 }
