@@ -128,7 +128,12 @@ export default {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 1000);
 
-        const googleRes = await fetch(googleUrl, { signal: controller.signal });
+        const googleRes = await fetch(googleUrl, { 
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+          }
+        });
         clearTimeout(timeoutId); // Clear timeout if fetch succeeds early
 
         if (googleRes.ok) {
