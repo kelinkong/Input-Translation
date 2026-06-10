@@ -1,27 +1,13 @@
 /**
  * Translation Proxy Worker (Cloudflare Workers)
- * Features: CORS whitelist + Free Google Translate Fallback + Baidu API
+ * Features: CORS whitelist + IP Rate Limiting + Hard Length Limit + Baidu API
  *
  * Deployment Instructions:
  * 1. Create a new Cloudflare Worker.
  * 2. Paste this code into the editor.
  * 3. Set Environment Variables: BAIDU_APP_ID, BAIDU_KEY
- * 4. Deploy and update PROXY_URL in your extension.
+ * 4. Deploy!
  */
-
-// Helper to map Baidu language codes to Google Translate language codes
-function mapBaiduToGoogleLang(baiduLang) {
-  const map = {
-    'zh': 'zh-CN',
-    'jp': 'ja',
-    'kor': 'ko',
-    'spa': 'es',
-    'fra': 'fr',
-    'ara': 'ar'
-    // others like en, de, th, ru, pt, it, el, nl are identical
-  };
-  return map[baiduLang] || baiduLang;
-}
 
 // Simple In-Memory Rate Limiter (Per Cloudflare Isolate)
 const ipRequests = new Map();
