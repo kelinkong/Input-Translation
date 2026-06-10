@@ -107,6 +107,35 @@ function setInCache(text, lang, data) {
     translationCache.set(key, data);
 }
 
+// --- Network State ---
+let canReachGoogle = null; // null = untested, true = connected, false = blocked
+
+// Function to silently ping Google to check for GFW
+async function checkNetworkEnvironment() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1000);
+        // Ping Google's generate_204 endpoint (very lightweight, meant for captive portal checks)
+        const res = await fetch('https://clients3.google.com/generate_204', { 
+            method: 'GET', 
+            mode: 'no-cors',
+            signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
+        canReachGoogle = true;
+        console.log('Network Check: Google is reachable (Overseas/Proxy).');
+    } catch (e) {
+        canReachGoogle = false;
+        console.log('Network Check: Google is blocked (Mainland China). Skipping Google API.');
+    }
+}
+
+// Check network on extension load
+checkNetworkEnvironment();
+// Re-check every 30 minutes in case they toggle their VPN
+setInterval(checkNetworkEnvironment, 30 * 60 * 1000);
+
+
 // Helper to map Baidu language codes to Google Translate language codes
 function mapBaiduToGoogleLang(baiduLang) {
     const map = {
@@ -121,6 +150,10 @@ function mapBaiduToGoogleLang(baiduLang) {
 }
 
 async function fetchGoogleTranslate(text, lang) {
+    // If we already know Google is blocked, fail fast! No need to wait 1.5s.
+    if (canReachGoogle === false) {
+        throw new Error('Google is blocked in current network environment. Fast fallback triggered.');
+    }
     const googleLang = mapBaiduToGoogleLang(lang);
     const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${googleLang}&dt=t&q=${encodeURIComponent(text)}`;
     
