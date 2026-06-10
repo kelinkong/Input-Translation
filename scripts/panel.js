@@ -33,11 +33,11 @@ function showTranslation(translation, absoluteRect) {
             <img class="logo" src="${chrome.runtime.getURL('images/icon-32.png')}" style="width: 16px; height: 16px;">
             <span style="font-size: 13px; font-weight: 600; color: #555;">Translation</span>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="copy-button" title="Copy to clipboard" style="border: none; background: transparent; cursor: pointer; color: #777; display: flex; align-items: center; padding: 2px; transition: color 0.2s;">
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center; height: 16px;">
+            <button class="copy-button" title="Copy to clipboard" style="border: none; background: transparent; cursor: pointer; color: #777; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; transition: color 0.2s; height: 16px; width: 16px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
-            <button class="close-button" title="Close" style="border: none; background: transparent; font-size: 20px !important; line-height: 1; cursor: pointer; color: #999; padding: 0; transition: color 0.2s;">×</button>
+            <button class="close-button" title="Close" style="border: none; background: transparent; font-size: 18px !important; line-height: 16px; font-family: Arial, sans-serif; cursor: pointer; color: #999; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; transition: color 0.2s; height: 16px; width: 16px;">×</button>
         </div>
     </div>
     <div class="translate-panel-content" style="padding: 12px 15px; margin: 0; text-align: justify; font-size: 14px; line-height: 1.5; color: #333; max-height: 300px; overflow-y: auto;">
