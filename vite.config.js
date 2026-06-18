@@ -29,7 +29,6 @@ export default defineConfig(({ mode }) => {
         targets: [
           { src: 'manifest.json', dest: '.' },
           { src: 'images', dest: '.' },
-          { src: '_locales', dest: '.' },
           { src: 'scripts/content.js', dest: 'scripts' },
           { src: 'scripts/panel.js', dest: 'scripts' },
           { src: 'popup/popup.js', dest: 'popup' },

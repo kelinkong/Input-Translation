@@ -1,9 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "__MSG_extName__",
+    "name": "Input Translation - Seamless Chat & Web Translator",
     "version": "1.2.3",
-    "default_locale": "en",
-    "description": "__MSG_extDesc__",
+    "description": "Translate text in input fields (ChatGPT, Claude) seamlessly and auto-translate selected text on webpages without switching tabs.",
     "permissions": [
         "activeTab",
         "tabs",
